@@ -1,0 +1,35 @@
+name: Build Linux MATLAB Package and Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MATLAB environment
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: 'R2022b'
+          products: MATLAB_Compiler
+
+      - name: Compile MATLAB code to Python Package
+        uses: matlab-actions/run-command@v2
+        with:
+          command: "mcc('-W', 'python:RMB261', '-T', 'link:lib', 'RMB261.m', '-d', './linux_build')"
+
+      - name: Build Final Docker Image
+        run: |
+          docker build -f Dockerfile.runtime -t microgrid-backend:final .
+          docker save -o microgrid-api-final.tar microgrid-backend:final
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: microgrid-docker-image
+          path: microgrid-api-final.tar

@@ -1,0 +1,25 @@
+# 使用 MathWorks 官方免费的 Runtime 镜像
+FROM mathworks/matlab-runtime:r2022b
+
+USER root
+# 安装 Python 3 和 pip
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-pip
+
+WORKDIR /app
+
+# 拷贝你在 GitHub 云端编译出的 linux_build 文件夹
+COPY linux_build /app/linux_build
+
+# 安装 MATLAB Python 免授权包
+RUN cd /app/linux_build && python3 setup.py install
+
+# 拷贝 Flask 后端代码
+COPY RMB30026.py /app/
+
+# 安装 Flask 相关的依赖 (不需要 matlabengine)
+RUN pip3 install numpy flask flask-cors
+
+EXPOSE 5026
+
+# 启动 API 服务
+CMD ["python3", "RMB30026.py"]
