@@ -1,15 +1,6 @@
-# 仅需几十MB的超轻量纯 Python 镜像
 FROM python:3.10-slim
-
 WORKDIR /app
-
-# 拷贝代码
 COPY RMB30026.py /app/
-
-# 安装轻量依赖
 RUN pip install --no-cache-dir numpy flask flask-cors
-
 EXPOSE 5026
-
-# 启动服务
 CMD ["python", "RMB30026.py"]
