@@ -11,12 +11,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        
       - name: Setup MATLAB environment
         uses: matlab-actions/setup-matlab@v2
+        env:
+          MATLAB_LOGIN_ID: ${{ secrets.MATHWORKS_ACCOUNT }}
+          MATLAB_PASSWORD: ${{ secrets.MATHWORKS_PASSWORD }}
         with:
           release: 'R2022b'
           products: MATLAB_Compiler
+          
 
       - name: Compile MATLAB code to Python Package
         uses: matlab-actions/run-command@v2
