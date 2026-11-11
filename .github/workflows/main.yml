@@ -1,4 +1,4 @@
-name: Build Linux MATLAB Package and Docker Image
+name: Build Pure Python Docker Image
 
 on:
   push:
@@ -11,25 +11,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Setup MATLAB environment
-        uses: matlab-actions/setup-matlab@v2
-        env:
-          MATLAB_LOGIN_ID: ${{ secrets.MATHWORKS_ACCOUNT }}
-          MATLAB_PASSWORD: ${{ secrets.MATHWORKS_PASSWORD }}
-        with:
-          release: 'R2022b'
-          products: MATLAB_Compiler
-          
 
-      - name: Compile MATLAB code to Python Package
-        uses: matlab-actions/run-command@v2
-        with:
-          command: "mcc('-W', 'python:RMB261', '-T', 'link:lib', 'RMB261.m', '-d', './linux_build')"
-
-      - name: Build Final Docker Image
+      - name: Build Docker Image
         run: |
-          docker build -f Dockerfile.runtime -t microgrid-backend:final .
+          docker build -t microgrid-backend:final .
           docker save -o microgrid-api-final.tar microgrid-backend:final
 
       - name: Upload Artifact
